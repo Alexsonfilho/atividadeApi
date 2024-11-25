@@ -2,36 +2,33 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Supervisores', {
-      sup_id: {
+    await queryInterface.createTable('Checklists', {
+      che_id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      sup_nome: {
-        type: Sequelize.STRING
+      che_tec_id: {
+        type: Sequelize.INTEGER
       },
-      sup_cpf: {
-        type: Sequelize.STRING
+      che_sup_id: {
+        type: Sequelize.INTEGER
       },
-      sup_loginclaro: {
-        type: Sequelize.STRING
+      che_it_id: {
+        type: Sequelize.INTEGER
       },
-      sup_senha: {
-        type: Sequelize.STRING
-      },
-      sup_createdAt: {
+      che_createdAt: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      sup_updatedAt: {
+      che_updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
       }
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Supervisores');
+    await queryInterface.dropTable('Checklists');
   }
 };

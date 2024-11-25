@@ -1,5 +1,6 @@
 'use strict';
 const Tecnicos = require("./tecnicos");
+const Checklists = require("./checklists");
 const { Model, DataTypes } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
@@ -31,6 +32,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true 
     },
+    sup_senha: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
     sup_createdAt: {
       type: DataTypes.DATE,
       allowNull: false
@@ -49,10 +54,15 @@ module.exports = (sequelize, DataTypes) => {
   });
 
 
-  // Relacionamento hasMany
+  // associação 
   Supervisores.associate = function(models) {
+     // associação (n,1) um supervisor pode cadastrar um ou n técnicos
     Supervisores.hasMany(models.Tecnicos, { foreignKey: 'tec_sup_id', as: 'tecnicos' });
-  };
+  
+  // associação (n,1) um supervisor pode estar em um ou n checklists
+      Supervisores.hasMany(models.Checklists, { foreignKey: 'che_sup_id', as: 'checklistSup' });
+    };
+  
 
   return Supervisores;
 };

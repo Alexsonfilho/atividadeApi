@@ -1,12 +1,13 @@
 // Incluir as biblibotecas
-
 // Responsavel por gerenciar as requisições, rotas e URLs, entre outras funcionalidades
 const express = require ('express')
+const bcrypt = require('bcrypt');
+
 // Incluir a conexão com o banco de dados
-const db = require("../db/models")
+const db = require("../db/models");
+const supervisores = require('../db/models/supervisores');
 // Chamar a função express
 const router = express.Router();
-
 
 
 // Endereço para acessar através da aplicação externa: http://localhost:3001/supervisores
@@ -19,36 +20,170 @@ const router = express.Router();
  }
 
  */
-// Criar a rota cadastrar 
-router.post("/", async (req, res) =>{
-    // Receber os dados
+// Cria a rota cadastrar 
+// Cria a rota cadastrar 
+router.post("/", async (req, res) => {
     var data = req.body;
+    try {
+        // Gera o hash da senha
+        const salt = await bcrypt.genSalt(3);
+        data.sup_senha = await bcrypt.hash(data.sup_senha, salt);
 
+        // Salva o supervisor no banco de dados
+        const dataMessage = await db.Supervisores.create(data);
 
-    // Salvar no banco de dados
-    
-    // Salvar no banco de dados
-    await db.Supervisores.create(data).then((dataMessage) => {
         return res.json({
-            error: false,
-            mensage: "Supervisor cadastrado com sucesso",
-            data: dataMessage
-        })
-    }).catch(()=>{
+            mensagem: "Supervisor cadastrado com sucesso!",
+            data: dataMessage,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            error: true,
+            mensagem: "Erro: Supervisor não cadastrado com sucesso!",
+        });
+    }
+});
+
+
+
+
+// Rota para redefinir a senha
+router.post("/redefinir", async (req, res) => {
+    const { sup_cpf, sup_senha } = req.body;
+  
+    try {
+      // Verifica se o técnico existe com esse email
+      const supervisores = await db.Supervisores.findOne({
+        where: { sup_cpf: sup_cpf },
+      });
+  
+      if (!supervisores) {
+        return res.status(404).json({ sucesso: false, mensagem: "Supervisor não encontrado." });
+      }
+  
+      // Criptografa a nova senha
+      const salt = await bcrypt.genSalt(3);
+      const senhaCriptografada = await bcrypt.hash(sup_senha, salt);
+  
+      // Atualiza a senha do técnico no banco de dados
+      await db.Supervisores.update({ sup_senha: senhaCriptografada }, {
+        where: { sup_cpf: sup_cpf }
+      });
+  
+      return res.json({
+        sucesso: true,
+        mensagem: "Senha redefinida com sucesso!",
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+        sucesso: false,
+        mensagem: "Erro ao redefinir a senha.",
+      });
+    }
+  });
+
+  router.post("/redefiniratual", async (req, res) => {
+    const { sup_cpf, sup_senha, senhaAtual } = req.body;
+
+    // Verificação dos parâmetros
+    if (!sup_cpf|| !senhaAtual || !sup_senha) {
+        return res.status(400).json({
+            sucesso: false,
+            mensagem: "Todos os campos são obrigatórios.",
+        });
+    }
+
+    console.log('Requisição recebida:', req.body);
+
+    try {
+        // Verifica se o supervisor existe com o login fornecido
+        const supervisor = await db.Supervisores.findOne({
+            where: { sup_cpf },
+        });
+
+        if (!supervisor) {
+            return res.status(404).json({ 
+                sucesso: false, 
+                mensagem: "Supervisor não encontrado." 
+            });
+        }
+
+        // Verifica se a senha atual está correta
+        const senhaValida = await bcrypt.compare(senhaAtual, supervisor.sup_senha);
+        if (!senhaValida) {
+            return res.status(401).json({
+                sucesso: false,
+                mensagem: "Senha atual incorreta.",
+            });
+        }
+
+        // Gera o hash da nova senha
+        const salt = await bcrypt.genSalt(10); // Alterado para 10
+        const novaSenhaCriptografada = await bcrypt.hash(sup_senha, salt);
+
+        // Atualiza a senha no banco de dados
+        await db.Supervisores.update(
+            { sup_senha: novaSenhaCriptografada },
+            { where: { sup_cpf: sup_cpf } }
+        );
+
         return res.json({
-            error: false,
-            mensage: "Error: Supervisor  não cadastrado com sucesso",
-            
-        })
-    })
+            sucesso: true,
+            mensagem: "Senha redefinida com sucesso!",
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao redefinir a senha.",
+        });
+    }
+});
 
-})
+router.post("/login", async (req, res) => {
+    const { sup_nome, sup_senha } = req.body;
 
+    try {
+        // Localizar o supervisor pelo nome
+        const supervisor = await db.Supervisores.findOne({
+            where: { sup_nome },
+        });
 
-// Criar a rota listar 
+        if (!supervisor) {
+            return res.status(404).json({
+                success: false,
+                mensagem: "Supervisor não encontrado!",
+            });
+        }
+
+        // Verificar se a senha fornecida corresponde ao hash
+        const senhaValida = await bcrypt.compare(sup_senha, supervisor.sup_senha);
+
+        if (!senhaValida) {
+            return res.status(401).json({
+                success: false,
+                mensagem: "Senha inválida!",
+            });
+        }
+
+        return res.json({
+            success: true,
+            mensagem: "Login realizado com sucesso!",
+            supervisor: supervisor.dataValues,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            mensagem: "Erro no servidor!",
+        });
+    }
+});
+
 // Endereço para acessar através da aplicação externa: http://localhost:3001/supervisores
+// http://localhost:3001/tecnicos?page=3
+// Cria a rota listar 
 router.get("/", async (req, res) => {
-
     // Receber o número da página, quando não é enviado o número da página é atribuido página 1
     const { page  = 1 } = req.query
     //console.log(page)
@@ -73,7 +208,6 @@ router.get("/", async (req, res) => {
 
     }
      
-
     // Recuperar todos os usuário do banco de dados
     const supervisores = await db.Supervisores.findAll({
 
@@ -121,7 +255,8 @@ router.get("/", async (req, res) => {
 });
 
 // Endereço para acessar através da aplicação externa: http://localhost:3001/supervisores/"1 ou id que você quer acessar"
-// Criar a rota visualizar e recber o parâmetro id enviado na URL
+
+// Cria a rota visualizar e recber o parâmetro id enviado na URL
 router.get("/:sup_id", async (req, res) => {
 
     // Receber o parâmetro enviado na URL
@@ -160,28 +295,32 @@ router.get("/:sup_id", async (req, res) => {
     "sup_loginclaro": "..."
     }
  */
-// Criar a rota editar 
-router.put("/", async (req, res) =>{
-    // Receber os dados enviados no corpo da requisição
-    var dados = req.body
+// Cria a rota editar 
+router.put("/", async (req, res) => {
+    var dados = req.body;
 
-    // Editar no banco de dados
-    await db.Supervisores.update(dados, {where: {sup_id: dados.sup_id}})
-    .then(() =>{
-        // Pausar o processamento e retonar a mensagem 
+    try {
+        // Verificar se a senha foi enviada para ser atualizada
+        if (dados.sup_loginclaro) {
+            const salt = await bcrypt.genSalt(10);
+            dados.sup_loginclaro = await bcrypt.hash(dados.sup_loginclaro, salt);
+        }
+
+        // Atualizar no banco de dados
+        await db.Supervisores.update(dados, { where: { sup_id: dados.sup_id } });
+
         return res.json({
-            mensagem: "Supervisor editado com sucesso!"
-        })
-    }).catch(() => {
-        // Pausar o processamento e retornar a mensgem
-        return req.status(400).json({
-            mensagem:"Erro: Supervisor não editado!"
-        })
-    })
+            mensagem: "Supervisor editado com sucesso!",
+        });
+    } catch (error) {
+        return res.status(500).json({
+            mensagem: "Erro: Supervisor não editado!",
+        });
+    }
+});
 
-})
 // Endereço para acessar através da aplicação externa: http://localhost:3001/supervisores/"1 ou id que você quer apagar"
-// Criar a rota apagar e receber o parãmetro id enviado na URL
+// Cria a rota apagar e receber o parãmetro id enviado na URL
 router.delete("/:sup_id", async (req, res) => {
     // Receber o parâmetro enviado na URL
     const { sup_id } = req.params
