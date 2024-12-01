@@ -21,6 +21,10 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       allowNull: false
     },
+    tec_tm_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
     tec_nome: {
       type: DataTypes.STRING,
       allowNull: true 
@@ -75,7 +79,14 @@ module.exports = (sequelize, DataTypes) => {
       targetKey: 'sup_id',        // Nome da chave primária no model Supervisor
       as: 'supervisores'            // Alias do relacionamento
     });
-  
+
+        // associação (1,1) um técnico é obtido somente por um  time
+        Tecnicos.belongsTo(models.Times, { 
+          foreignKey: 'tec_tm_id',  // Nome da chave estrangeira no model Tecnicos
+          targetKey: 'tm_id',         // Nome da chave primária no model Times
+          as: 'timeTec',                 // Alias único para a relação
+        });
+
 // associação (n,1) um técnico pode estar em um ou n checklists
       Tecnicos.hasMany(models.Checklists, { foreignKey: 'che_tec_id', as: 'checklistTec' });
     };

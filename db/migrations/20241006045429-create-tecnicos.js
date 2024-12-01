@@ -13,6 +13,9 @@ module.exports = {
       tec_sup_id:{
         type: Sequelize.INTEGER
       },
+      tec_tm_id:{
+        type: Sequelize.INTEGER
+      },
       tec_nome: {
         type: Sequelize.STRING
       },
