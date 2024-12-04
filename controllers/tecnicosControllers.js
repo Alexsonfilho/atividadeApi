@@ -229,6 +229,3 @@ module.exports = class tecnicosController{
   })
 }
 }
-
-
-

@@ -70,53 +70,53 @@ module.exports = class supervisoresController{
     }
     // Método para login 
     static async login(req, res) {
-    const { sup_nome, sup_senha } = req.body;
-
-    try {
-        // Buscar supervisor pelo nome
-        const supervisor = await Supervisores.findOne({
-            where: { sup_nome },
-        });
-
-        // Verificar se o supervisor existe
-        if (!supervisor) {
-            return res.status(404).json({
-                success: false,
-                mensagem: "Supervisor não encontrado!",
+        const { sup_nome, sup_senha } = req.body;
+    
+        try {
+            // Buscar supervisor pelo nome
+            const supervisor = await Supervisores.findOne({
+                where: { sup_nome },
             });
-        }
-
-        // Verificar se a senha fornecida corresponde ao hash
-        const senhaValida = await bcrypt.compare(sup_senha, supervisor.sup_senha);
-
-        if (!senhaValida) {
-            return res.status(401).json({
-                success: false,
-                mensagem: "Senha inválida!",
-            });
-        }
-
-        // Gerar o token JWT
-        const token = jwt.sign(
+    
+            // Verificar se o supervisor existe
+            if (!supervisor) {
+                return res.status(404).json({
+                    success: false,
+                    mensagem: "Supervisor não encontrado!",
+                });
+            }
+    
+            // Verificar se a senha fornecida corresponde ao hash
+            const senhaValida = await bcrypt.compare(sup_senha, supervisor.sup_senha);
+    
+            if (!senhaValida) {
+                return res.status(401).json({
+                    success: false,
+                    mensagem: "Senha inválida!",
+                });
+            }
+    
+            // Gerar o token JWT
+         const token = jwt.sign(
             { id: supervisor.sup_id }, // Payload do token
             process.env.JWT_KEY, // Chave secreta (definida no arquivo .env)
             { expiresIn: '1h' } // Token válido por 1 hora
         );
-
-        // Retornar sucesso com o token
-        return res.json({
-            success: true,
-            mensagem: "Login realizado com sucesso!",
-            token, // Enviar o token para autenticação futura
-        });
-    } catch (error) {
-        console.error("Erro no login do supervisor:", error);
-        return res.status(500).json({
-            success: false,
-            mensagem: "Erro no servidor!",
-            error: error.message,
-        });
-    }
+    
+            // Retornar sucesso com o token
+            return res.json({
+                success: true,
+                mensagem: "Login realizado com sucesso!",
+                token, // Enviar o token para autenticação futura
+            });
+        } catch (error) {
+            console.error("Erro no login do supervisor:", error);
+            return res.status(500).json({
+                success: false,
+                mensagem: "Erro no servidor!",
+                error: error.message,
+            });
+        }
     }
     // Método para listar por nome
     static async getBySupNome(req, res) {

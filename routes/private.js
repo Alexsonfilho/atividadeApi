@@ -6,6 +6,8 @@ const instrumentosController = require('../controllers/instrumentosControllers')
 const CategoriasController = require('../controllers/categoriasControllers')
 const ChecklistsController = require('../controllers/checklistsControllers')
 
+
+
 // Rotas Supervisores Privadas
 router.get('/supervisores', supervisoresController.validaToken,supervisoresController.showAll) // listar supervisores
 router.get('/supervisores/:sup_nome', supervisoresController.validaToken,supervisoresController.getBySupNome) // listar por nome

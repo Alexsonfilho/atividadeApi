@@ -1,0 +1,997 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Documentação da API",
+        "description": "Descrição das operações disponíveis na API.",
+        "version": "1.0.0"
+    },
+    "tags": [
+        {
+            "name": "Supervisores",
+            "description": "Operações relacionadas aos supervisores"
+        },
+        {
+            "name": "Técnicos",
+            "description": "Operações relacionadas aos técnicos"
+        },
+        {
+            "name": "Checklists",
+            "description": "Operações relacionadas aos checklists"
+        },
+        {
+            "name": "Instrumentos",
+            "description": "Operações relacionadas aos instrumentos"
+        },
+        {
+            "name": "Categorias",
+            "description": "Operações relacionadas aos categorias"
+        }
+    ],
+    "paths": {
+        "/supervisores": {
+            "post": {
+                "tags": [
+                    "Supervisores"
+                ],
+                "summary": "Cadastrar um novo supervisor.",
+                "description": "Este endpoint cria um novo supervisor no sistema.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "sup_nome": {
+                                        "type": "string"
+                                    },
+                                    "sup_cpf": {
+                                        "type": "string"
+                                    },
+                                    "sup_senha": {
+                                        "type": "string"
+                                    },
+                                    "sup_loginclaro": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Supervisor cadastrado com sucesso!"
+                    },
+                    "500": {
+                        "description": "Erro ao cadastrar supervisor."
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "Supervisores"
+                ],
+                "summary": "Listar todos os supervisores.",
+                "description": "Este endpoint retorna uma lista de todos os supervisores registrados.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de supervisores."
+                    },
+                    "401": {
+                        "description": "Não autorizado."
+                    },
+                    "500": {
+                        "description": "Erro ao listar supervisores."
+                    }
+                }
+            }
+        },
+        "/supervisores/{sup_nome}": {
+            "get": {
+                "tags": [
+                    "Supervisores"
+                ],
+                "summary": "Buscar supervisor por nome.",
+                "description": "Este endpoint retorna um supervisor específico pelo nome.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "sup_nome",
+                        "required": true,
+                        "description": "Nome do supervisor a ser buscado.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Supervisor encontrado."
+                    },
+                    "400": {
+                        "description": "Supervisor não encontrado."
+                    },
+                    "401": {
+                        "description": "Não autorizado."
+                    },
+                    "500": {
+                        "description": "Erro ao buscar supervisor."
+                    }
+                }
+            }
+        },
+        "/supervisores/{sup_id}": {
+            "put": {
+                "tags": [
+                    "Supervisores"
+                ],
+                "summary": "Atualizar dados de um supervisor.",
+                "description": "Este endpoint atualiza as informações de um supervisor específico.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "sup_id",
+                        "required": true,
+                        "description": "ID do supervisor a ser atualizado.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "sup_nome": {
+                                        "type": "string"
+                                    },
+                                    "sup_cpf": {
+                                        "type": "string"
+                                    },
+                                    "sup_senha": {
+                                        "type": "string"
+                                    },
+                                    "sup_loginclaro": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Supervisor atualizado com sucesso."
+                    },
+                    "400": {
+                        "description": "Supervisor não encontrado ou dados inválidos."
+                    },
+                    "401": {
+                        "description": "Não autorizado."
+                    },
+                    "500": {
+                        "description": "Erro ao atualizar supervisor."
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Supervisores"
+                ],
+                "summary": "Excluir um supervisor.",
+                "description": "Este endpoint exclui um supervisor específico.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "sup_id",
+                        "required": true,
+                        "description": "ID do supervisor a ser excluído.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Supervisor excluído com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado."
+                    },
+                    "404": {
+                        "description": "Supervisor não encontrado."
+                    },
+                    "500": {
+                        "description": "Erro ao excluir supervisor."
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": [
+                    "Supervisores"
+                ],
+                "summary": "Login de supervisor.",
+                "description": "Este endpoint permite que um supervisor faça login no sistema e receba um token JWT.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "sup_nome": {
+                                        "type": "string"
+                                    },
+                                    "sup_senha": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login realizado com sucesso."
+                    },
+                    "401": {
+                        "description": "Senha inválida."
+                    },
+                    "404": {
+                        "description": "Supervisor não encontrado."
+                    },
+                    "500": {
+                        "description": "Erro ao realizar login."
+                    }
+                }
+            }
+        },
+    
+
+   
+        "/tecnicos": {
+            "post": {
+                "tags": [
+                    "Técnicos"
+                ],
+                "summary": "Cadastrar um novo técnico",
+                "description": "Este endpoint cria um novo técnico no sistema.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "tec_nome": {
+                                        "type": "string"
+                                    },
+                                    "tec_cpf": {
+                                        "type": "string"
+                                    },
+                                    "tec_senha": {
+                                        "type": "string"
+                                    },
+                                    "tec_loginclaro": {
+                                        "type": "string"
+                                    },
+                                    "tec_email": {
+                                        "type": "string"
+                                    },
+                                    "tec_tel": {
+                                        "type": "string"
+                                    },
+                                    "tec_placa": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Técnico cadastrado com sucesso!"
+                    },
+                    "500": {
+                        "description": "Erro ao cadastrar técnico."
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "Técnicos"
+                ],
+                "summary": "Listar todos os técnicos",
+                "description": "Este endpoint retorna uma lista de todos os técnicos registrados no sistema.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de técnicos."
+                    },
+                    "401": {
+                        "description": "Token inválido ou ausente."
+                    },
+                    "500": {
+                        "description": "Erro ao listar técnicos."
+                    }
+                }
+            }
+        },
+        "/tecnicos/login": {
+            "post": {
+                "tags": [
+                    "Técnicos"
+                ],
+                "summary": "Realizar login de um técnico",
+                "description": "Este endpoint realiza o login de um técnico e gera um token JWT.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "tec_nome": {
+                                        "type": "string"
+                                    },
+                                    "tec_senha": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login realizado com sucesso!"
+                    },
+                    "401": {
+                        "description": "Credenciais inválidas."
+                    },
+                    "500": {
+                        "description": "Erro ao realizar login."
+                    }
+                }
+            }
+        },
+        "/tecnicos/reset-password": {
+            "post": {
+                "tags": [
+                    "Técnicos"
+                ],
+                "summary": "Redefinir a senha do técnico",
+                "description": "Este endpoint permite ao técnico redefinir a sua senha.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "tec_email": {
+                                        "type": "string"
+                                    },
+                                    "tec_senha": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Senha redefinida com sucesso!"
+                    },
+                    "404": {
+                        "description": "Técnico não encontrado."
+                    },
+                    "500": {
+                        "description": "Erro ao redefinir a senha."
+                    }
+                }
+            }
+        },
+        "/tecnicos/{tec_nome}": {
+            "get": {
+                "tags": [
+                    "Técnicos"
+                ],
+                "summary": "Listar técnico por nome",
+                "description": "Este endpoint retorna um técnico específico baseado no nome fornecido.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "tec_nome",
+                        "required": true,
+                        "description": "Nome do técnico.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Técnico encontrado."
+                    },
+                    "404": {
+                        "description": "Técnico não encontrado."
+                    },
+                    "401": {
+                        "description": "Token inválido ou ausente."
+                    }
+                }
+            }
+        },
+    
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    },
+"/checklists": {
+    "post": {
+      "tags": ["Checklists"],
+      "summary": "Criar um novo checklist",
+      "description": "Este endpoint cria um novo checklist no sistema. Requer autenticação JWT.",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "che_tec_id": {
+                  "type": "integer"
+                },
+                "che_sup_id": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Checklist criado com sucesso!"
+        },
+        "500": {
+          "description": "Erro ao criar checklist."
+        }
+      }
+    },
+    "get": {
+      "tags": ["Checklists"],
+      "summary": "Listar todos os checklists",
+      "description": "Este endpoint lista todos os checklists cadastrados no sistema. Requer autenticação JWT.",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Lista de checklists."
+        },
+        "500": {
+          "description": "Erro ao listar checklists."
+        }
+      }
+    }
+  },
+  "/checklists/{che_id}": {
+    "get": {
+      "tags": ["Checklists"],
+      "summary": "Buscar um checklist por ID",
+      "description": "Este endpoint busca um checklist específico pelo ID. Requer autenticação JWT.",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "che_id",
+          "required": true,
+          "description": "ID do checklist.",
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Checklist encontrado."
+        },
+        "400": {
+          "description": "Checklist não encontrado."
+        },
+        "500": {
+          "description": "Erro ao buscar checklist."
+        }
+      }
+    },
+    "put": {
+      "tags": ["Checklists"],
+      "summary": "Editar um checklist",
+      "description": "Este endpoint permite editar um checklist existente. Requer autenticação JWT.",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "che_id",
+          "required": true,
+          "description": "ID do checklist a ser editado.",
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "in": "body",
+          "name": "checklist",
+          "description": "Dados atualizados do checklist.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "che_tec_id": {
+                    "type": "integer"
+                  },
+                  "che_sup_id": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Checklist editado com sucesso."
+        },
+        "400": {
+          "description": "Checklist não encontrado ou não alterado."
+        },
+        "500": {
+          "description": "Erro ao editar checklist."
+        }
+      }
+    },
+    "delete": {
+      "tags": ["Checklists"],
+      "summary": "Deletar um checklist",
+      "description": "Este endpoint permite excluir um checklist. Requer autenticação JWT.",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "che_id",
+          "required": true,
+          "description": "ID do checklist a ser deletado.",
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Checklist deletado com sucesso."
+        },
+        "400": {
+          "description": "Checklist não encontrado."
+        },
+        "500": {
+          "description": "Erro ao deletar checklist."
+        }
+      }
+    
+  }
+},
+
+"/instrumentos": {
+      "post": {
+        "tags": ["Instrumentos"],
+        "summary": "Criar um novo instrumento",
+        "description": "Este endpoint cria um novo instrumento no sistema. Requer autenticação JWT.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "it_nome": {
+                    "type": "string"
+                  },
+                  "it_sts": {
+                    "type": "string"
+                  },
+                  "cat_id": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Instrumento criado com sucesso!"
+          },
+          "500": {
+            "description": "Erro ao criar instrumento."
+          }
+        }
+      },
+      "get": {
+        "tags": ["Instrumentos"],
+        "summary": "Listar todos os instrumentos",
+        "description": "Este endpoint lista todos os instrumentos cadastrados no sistema. Requer autenticação JWT.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de instrumentos."
+          },
+          "400": {
+            "description": "Nenhum instrumento encontrado."
+          },
+          "500": {
+            "description": "Erro ao listar instrumentos."
+          }
+        }
+      }
+    },
+    "/instrumentos/{it_id}": {
+      "get": {
+        "tags": ["Instrumentos"],
+        "summary": "Buscar um instrumento por ID",
+        "description": "Este endpoint busca um instrumento específico pelo ID. Requer autenticação JWT.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "it_id",
+            "required": true,
+            "description": "ID do instrumento.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Instrumento encontrado."
+          },
+          "400": {
+            "description": "Instrumento não encontrado."
+          },
+          "500": {
+            "description": "Erro ao buscar instrumento."
+          }
+        }
+      },
+      "put": {
+        "tags": ["Instrumentos"],
+        "summary": "Editar um instrumento",
+        "description": "Este endpoint permite editar um instrumento existente. Requer autenticação JWT.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "it_id",
+            "required": true,
+            "description": "ID do instrumento a ser editado.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "body",
+            "name": "instrumento",
+            "description": "Dados atualizados do instrumento.",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "it_nome": {
+                  "type": "string"
+                },
+                "it_sts": {
+                  "type": "string"
+                },
+                "cat_id": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Instrumento editado com sucesso."
+          },
+          "400": {
+            "description": "Instrumento não encontrado ou dados não alterados."
+          },
+          "500": {
+            "description": "Erro ao editar instrumento."
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Instrumentos"],
+        "summary": "Deletar um instrumento",
+        "description": "Este endpoint permite excluir um instrumento. Requer autenticação JWT.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "it_id",
+            "required": true,
+            "description": "ID do instrumento a ser deletado.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Instrumento deletado com sucesso."
+          },
+          "400": {
+            "description": "Instrumento não encontrado."
+          },
+          "500": {
+            "description": "Erro ao deletar instrumento."
+          }
+        }
+      }
+    },
+    
+    "/categorias": {
+      "post": {
+        "tags": ["Categorias"],
+        "summary": "Criar uma nova categoria",
+        "description": "Este endpoint cria uma nova categoria no sistema. Requer autenticação JWT.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "cat_nome": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Categoria cadastrada com sucesso!"
+          },
+          "500": {
+            "description": "Erro ao cadastrar categoria."
+          }
+        }
+      },
+      "get": {
+        "tags": ["Categorias"],
+        "summary": "Listar todas as categorias",
+        "description": "Este endpoint lista todas as categorias cadastradas no sistema. Requer autenticação JWT.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de categorias."
+          },
+          "400": {
+            "description": "Nenhuma categoria encontrada."
+          },
+          "500": {
+            "description": "Erro ao listar categorias."
+          }
+        }
+      }
+    },
+    "/categorias/{cat_id}": {
+      "get": {
+        "tags": ["Categorias"],
+        "summary": "Buscar uma categoria por ID",
+        "description": "Este endpoint busca uma categoria específica pelo ID. Requer autenticação JWT.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cat_id",
+            "required": true,
+            "description": "ID da categoria.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Categoria encontrada."
+          },
+          "400": {
+            "description": "Categoria não encontrada."
+          },
+          "500": {
+            "description": "Erro ao buscar categoria."
+          }
+        }
+      },
+      "put": {
+        "tags": ["Categorias"],
+        "summary": "Editar uma categoria",
+        "description": "Este endpoint permite editar uma categoria existente. Requer autenticação JWT.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cat_id",
+            "required": true,
+            "description": "ID da categoria a ser editada.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "body",
+            "name": "categoria",
+            "description": "Dados atualizados da categoria.",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "cat_nome": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Categoria editada com sucesso."
+          },
+          "400": {
+            "description": "Categoria não encontrada ou dados não alterados."
+          },
+          "500": {
+            "description": "Erro ao editar categoria."
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Categorias"],
+        "summary": "Deletar uma categoria",
+        "description": "Este endpoint permite excluir uma categoria. Requer autenticação JWT.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cat_id",
+            "required": true,
+            "description": "ID da categoria a ser deletada.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Categoria deletada com sucesso."
+          },
+          "400": {
+            "description": "Categoria não encontrada."
+          },
+          "500": {
+            "description": "Erro ao deletar categoria."
+          }
+        }
+      }
+    }
+  }
+
+
+}

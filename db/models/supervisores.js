@@ -63,10 +63,7 @@ module.exports = (sequelize, DataTypes) => {
       Supervisores.hasMany(models.Checklists, { foreignKey: 'che_sup_id', as: 'checklistSup' });
 
     // associação (1,1) um supervisor pode estar em somente um time
-      Supervisores.hasOne(models.Times, {
-        foreignKey: 'tm_sup_id', // Nome da chave estrangeira no model Times
-        as: 'timeSup', // Alias para acessar o time associado ao supervisor
-      });
+  
     };
   
 
